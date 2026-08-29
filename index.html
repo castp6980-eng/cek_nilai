@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cek Nilai Siswa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F2E8;
+    --paper-line:#E4DCC8;
+    --ink:#1E2A3A;
+    --ink-soft:#5B6472;
+    --red:#B23A2E;
+    --red-dark:#8C2C22;
+    --gold:#B8892B;
+    --green-ok:#3C6E47;
+    --radius:14px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+  }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Inter', sans-serif;
+    color:var(--ink);
+    background:
+      linear-gradient(var(--paper-line) 1px, transparent 1px),
+      var(--paper);
+    background-size: 100% 2.1rem;
+    padding: 32px 16px 60px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .sheet{
+    width:100%;
+    max-width:460px;
+  }
+
+  .letterhead{
+    text-align:center;
+    margin-bottom:22px;
+    padding-bottom:16px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .letterhead .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+  }
+
+  .letterhead h1{
+    font-family:'Fraunces', serif;
+    font-size:30px;
+    font-weight:700;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+
+  .letterhead p{
+    margin:6px 0 0;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+
+  .card{
+    background:#FFFDF8;
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    padding:26px 22px 24px;
+    box-shadow: 0 1px 2px rgba(30,42,58,0.04), 0 12px 28px -18px rgba(30,42,58,0.35);
+    position:relative;
+  }
+
+  .field{
+    margin-bottom:18px;
+  }
+
+  .field label{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:7px;
+  }
+
+  .field label .num{
+    color:var(--red);
+    font-weight:500;
+  }
+
+  input, select{
+    width:100%;
+    font-family:'JetBrains Mono', monospace;
+    font-size:15px;
+    padding:11px 12px;
+    background:transparent;
+    border:none;
+    border-bottom: 1.5px solid #C9BFA5;
+    color:var(--ink);
+    outline:none;
+    appearance:none;
+    -webkit-appearance:none;
+    border-radius:0;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  select{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' stroke='%235B6472' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;
+    background-position: right 4px center;
+    padding-right: 26px;
+    cursor:pointer;
+  }
+
+  input::placeholder{
+    color:#B4AC96;
+    font-weight:400;
+  }
+
+  input:focus, select:focus{
+    border-bottom-color: var(--red);
+    background: rgba(178,58,46,0.04);
+  }
+  input:focus-visible, select:focus-visible{
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  button{
+    width:100%;
+    margin-top:6px;
+    padding:14px;
+    background:var(--ink);
+    color:#F6F2E8;
+    border:none;
+    border-radius:8px;
+    font-family:'Inter', sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    letter-spacing:0.01em;
+    cursor:pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+  }
+  button:hover:not(:disabled){ background:#2C3B50; }
+  button:active:not(:disabled){ transform: scale(0.99); }
+  button:disabled{
+    background:#C9BFA5;
+    color:#FFFDF8;
+    cursor:not-allowed;
+  }
+  button:focus-visible{ outline:2px solid var(--red); outline-offset:2px; }
+
+  #result{ margin-top:4px; }
+
+  /* ---- Result: stamped report ---- */
+  .result-wrap{
+    margin-top:22px;
+    padding-top:20px;
+    border-top: 1px dashed #C9BFA5;
+    animation: fadeUp 0.35s ease both;
+  }
+  @keyframes fadeUp{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .report-row{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    padding:7px 0;
+    border-bottom: 1px solid #EFE9D8;
+    font-size:14px;
+  }
+  .report-row:last-of-type{ border-bottom:none; }
+  .report-row .k{ color:var(--ink-soft); }
+  .report-row .v{ font-weight:600; text-align:right; }
+
+  .stamp-area{
+    display:flex;
+    justify-content:center;
+    margin: 18px 0 6px;
+  }
+
+  .stamp{
+    width:118px;
+    height:118px;
+    border-radius:50%;
+    border: 3px solid var(--red);
+    color:var(--red);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    transform: rotate(-6deg);
+    position:relative;
+    animation: stampIn 0.4s cubic-bezier(.2,.8,.3,1.2) both;
+    animation-delay:0.1s;
+  }
+  .stamp::before{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border:1px solid var(--red);
+    border-radius:50%;
+    opacity:0.55;
+  }
+  @keyframes stampIn{
+    from{ opacity:0; transform: rotate(-6deg) scale(1.4); }
+    to{ opacity:1; transform: rotate(-6deg) scale(1); }
+  }
+  .stamp .label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:9px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+  }
+  .stamp .score{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:34px;
+    line-height:1;
+    margin:2px 0;
+  }
+  .stamp.low{ color:var(--gold); border-color:var(--gold); }
+  .stamp.low::before{ border-color:var(--gold); }
+
+  .name-line{
+    font-family:'Fraunces', serif;
+    font-size:20px;
+    font-weight:600;
+    text-align:center;
+    margin: 2px 0 2px;
+  }
+  .sub-line{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom: 14px;
+  }
+
+  .error-box{
+    margin-top:22px;
+    padding:14px 14px;
+    background:#FBEDEA;
+    border:1px solid #E3B3AB;
+    border-left:4px solid var(--red-dark);
+    border-radius:8px;
+    color:var(--red-dark);
+    font-size:13.5px;
+    line-height:1.5;
+  }
+
+  .footnote{
+    text-align:center;
+    margin-top:20px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:0.05em;
+    color:#A79F87;
+  }
+
+  @media (max-width: 380px){
+    .letterhead h1{ font-size:25px; }
+    .card{ padding:22px 16px 20px; }
+    .stamp{ width:104px; height:104px; }
+    .stamp .score{ font-size:29px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <div class="letterhead">
+    <p class="eyebrow">Layanan Hasil Ujian</p>
+    <h1>Cek Nilai Siswa</h1>
+    <p>Masukkan data untuk melihat hasil ujianmu</p>
+  </div>
+
+  <div class="card">
+
+    <div class="field">
+      <label for="noPeserta"><span class="num">01</span> password</label>
+      <input type="text" id="noPeserta" placeholder="Contoh: 20250001" inputmode="numeric">
+    </div>
+
+    <div class="field">
+      <label for="kelas"><span class="num">02</span> Kelas</label>
+      <select id="kelas"></select>
+    </div>
+
+    <div class="field">
+      <label for="kodeMapel"><span class="num">03</span> Kode Mapel</label>
+      <input type="text" id="kodeMapel" placeholder="Contoh: MTK" autocapitalize="characters">
+    </div>
+
+    <button id="btnCek" onclick="cekNilai()">Cek Nilai</button>
+
+    <div id="result"></div>
+
+  </div>
+
+  <p class="footnote">Hasil diambil langsung dari data sekolah</p>
+</div>
+
+<script>
+  // GANTI dengan URL Web App hasil Deploy Apps Script kamu (yang berakhiran /exec)
+  const API_URL = "https://script.google.com/macros/s/AKfycbzOwSWkSqF0PervY6pRhpUzyRYfUfuYv947willFpAcgAqc7aJyCYE8HDKOI4mpY3Eypw/exec";
+
+  // Generate opsi kelas 7A..7J, 8A..8J, 9A..9J otomatis
+  (function populateKelas() {
+    const select = document.getElementById("kelas");
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Pilih kelas";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+
+    const tingkat = [7, 8, 9];
+    const huruf = ["A","B","C","D","E","F","G","H","I","J"];
+    tingkat.forEach(t => {
+      huruf.forEach(h => {
+        const opt = document.createElement("option");
+        opt.value = t + h;
+        opt.textContent = t + h;
+        select.appendChild(opt);
+      });
+    });
+  })();
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function cekNilai() {
+    const noPeserta = document.getElementById("noPeserta").value.trim();
+    const kelas = document.getElementById("kelas").value.trim();
+    const kodeMapel = document.getElementById("kodeMapel").value.trim();
+    const resultDiv = document.getElementById("result");
+    const btn = document.getElementById("btnCek");
+
+    if (!noPeserta || !kelas || !kodeMapel) {
+      resultDiv.innerHTML = `<div class="error-box">Mohon isi password, Kelas, dan Kode Mapel terlebih dahulu.</div>`;
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Mencari...";
+    resultDiv.innerHTML = "";
+
+    try {
+      const url = `${API_URL}?noPeserta=${encodeURIComponent(noPeserta)}&kelas=${encodeURIComponent(kelas)}&kodeMapel=${encodeURIComponent(kodeMapel)}`;
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (json.status === "success") {
+        const d = json.data;
+        const nilaiNum = parseFloat(d.nilai);
+        const stampClass = (!isNaN(nilaiNum) && nilaiNum < 75) ? "stamp low" : "stamp";
+
+        resultDiv.innerHTML = `
+          <div class="result-wrap">
+            <div class="name-line">${escapeHtml(d.nama)}</div>
+            <div class="sub-line">${escapeHtml(d.kelas)} &middot; ${escapeHtml(d.sekolah)}</div>
+
+            <div class="stamp-area">
+              <div class="${stampClass}">
+                <span class="label">Nilai</span>
+                <span class="score">${escapeHtml(String(d.nilai))}</span>
+              </div>
+            </div>
+
+            <div class="report-row"><span class="k">Kode Mapel</span><span class="v">${escapeHtml(d.kodeMapel)}</span></div>
+            <div class="report-row"><span class="k">Mata Pelajaran</span><span class="v">${escapeHtml(d.mataPelajaran)}</span></div>
+            <div class="report-row"><span class="k">Jumlah Benar</span><span class="v">${escapeHtml(String(d.jumlahBenar))} / ${escapeHtml(String(d.jumlahSoal))}</span></div>
+            <div class="report-row"><span class="k">Tidak Dijawab</span><span class="v">${escapeHtml(String(d.tidakDijawab))}</span></div>
+          </div>`;
+      } else {
+        resultDiv.innerHTML = `<div class="error-box">${escapeHtml(json.message || "Data tidak ditemukan.")}</div>`;
+      }
+    } catch (err) {
+      resultDiv.innerHTML = `<div class="error-box">Gagal terhubung ke server. Periksa koneksi internetmu dan coba lagi.</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Cek Nilai";
+    }
+  }
+</script>
+
+</body>
+</html>
